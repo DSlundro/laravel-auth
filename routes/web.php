@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,14 +14,21 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
 
-Route::middleware('auth')->prefix('admin')->namespace('Admin')->name('admin.')->group(function(){
-    Route::get('/home', 'Admin\HomeController@index')->name('dashboard');
+Route::middleware('auth')->prefix('admin')->namespace('Admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('/', 'HomeController@index')->name('dashboard');
+    // Admin posts
+    Route::resource('posts', 'PostController')->parameters([
+        'posts' => 'post:slug'
+    ]);
 });
+
+// inseriamola come ultima rotta
+// alla fine del file web.php
+Route::get("{any?}", function () {
+    return view("guest.home");
+})->where("any", ".*");
+
